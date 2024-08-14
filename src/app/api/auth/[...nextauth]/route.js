@@ -1,27 +1,39 @@
-// src/app/api/auth/[...nextauth]/route.js
+// src/app/api/auth/[...nextauth]/route.ts
 import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import EmailProvider from 'next-auth/providers/email'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcrypt'
 
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
       },
-      from: process.env.EMAIL_FROM,
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        })
+        if (!user || !user.password) {
+          return null
+        }
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+        if (!isPasswordValid) {
+          return null
+        }
+        return { id: user.id, email: user.email, name: user.name }
+      }
     }),
   ],
   pages: {
-    signIn: '/',
-    verifyRequest: '/check-email',
+    signIn: '/login',
   },
   callbacks: {
     async session({ session, user }) {
@@ -29,15 +41,6 @@ const handler = NextAuth({
         session.user.id = user.id
       }
       return session
-    },
-    async redirect({ url, baseUrl }) {
-      // Redirect to the welcome page after sign-in
-      if (url.startsWith(baseUrl)) {
-        return `${baseUrl}/welcome`
-      } else if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
-      }
-      return baseUrl
     },
   },
 })

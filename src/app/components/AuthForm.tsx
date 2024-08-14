@@ -1,32 +1,32 @@
 // src/app/components/AuthForm.tsx
 "use client"
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
-export default function AuthForm() {
+interface AuthFormProps {
+  mode: 'signup' | 'login'
+  onSubmit: (email: string, password: string) => Promise<void>
+}
+
+export default function AuthForm({ mode, onSubmit }: AuthFormProps) {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    try {
-      const result = await signIn('email', { 
-        email, 
-        redirect: false,
-        callbackUrl: '/welcome' 
-      })
+    if (mode === 'signup' && password !== confirmPassword) {
+      setError("Passwords don't match")
+      setIsLoading(false)
+      return
+    }
 
-      if (result?.error) {
-        setError('Invalid email or an error occurred. Please try again.')
-      } else {
-        router.push('/check-email')
-      }
+    try {
+      await onSubmit(email, password)
     } catch (error) {
       setError('An unexpected error occurred. Please try again.')
     } finally {
@@ -44,13 +44,31 @@ export default function AuthForm() {
         required
         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter your password"
+        required
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      {mode === 'signup' && (
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm your password"
+          required
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      )}
       {error && <p className="text-red-500">{error}</p>}
       <button 
         type="submit" 
         disabled={isLoading}
         className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
-        {isLoading ? 'Processing...' : 'Login/Signup'}
+        {isLoading ? 'Processing...' : mode === 'signup' ? 'Sign Up' : 'Log In'}
       </button>
     </form>
   )

@@ -1,11 +1,11 @@
-// src/app/login/page.tsx
-import LoginForm from '../components/LoginForm'
+// src/app/signup/page.tsx
+import SignupForm from '../components/SignupForm'
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <LoginForm />
+        <SignupForm />
       </div>
     </div>
   )

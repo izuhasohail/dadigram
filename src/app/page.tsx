@@ -1,14 +1,17 @@
-// src/app/page.tsx
 import Link from 'next/link'
 import './globals.css'
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
       <header className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-blue-600">Dadigram</h1>
         <nav>
-          <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mr-4">
             Login
+          </Link>
+          <Link href="/signup" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            Sign Up
           </Link>
         </nav>
       </header>
@@ -17,7 +20,7 @@ export default function LandingPage() {
         <section className="text-center mb-16">
           <h2 className="text-5xl font-bold text-gray-800 mb-4">Welcome to Dadigram</h2>
           <p className="text-xl text-gray-600 mb-8">Connect, Share, and Engage with Your Community</p>
-          <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg">
+          <Link href="/signup" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg">
             Get Started
           </Link>
         </section>
