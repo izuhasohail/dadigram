@@ -1,10 +1,11 @@
-"use client"
 
+"use client"
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Line } from 'react-chartjs-2'
 import {
-  Chart as ChartJS,
+  Chart as ChartJS
+  ,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -13,6 +14,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+
 
 // Register Chart.js components
 ChartJS.register(
